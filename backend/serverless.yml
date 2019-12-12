@@ -25,6 +25,7 @@ provider:
     USER_BOOKS_BOOKID_INDX: user-books-bookid-indx-${self:provider.stage}
     BOOKS_COVER_BUCKET: user-books-cover-${self:provider.stage}
     BOOKS_COVER_URL_EXP_SECONDS: 300
+    JWKS_URL: http://url
  
 custom:
   serverless-offline:
