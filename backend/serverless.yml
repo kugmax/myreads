@@ -45,16 +45,14 @@ custom:
         version: v1.0.0
         title: Book API
         description: MyReads app
+#        TODO: need to impl
     models:
-      - name: CreateBookRequest
+      - name: SaveBookRequest
         contentType: application/json
-        schema: ${file(models/create-book-request.json)}
-      - name: UpdateBookRequest
-        contentType: application/json
-        schema: ${file(models/update-book-request.json)}
+        schema: ${file(api/create-book-request.json)}
       - name: ChangeBookStatusRequest
         contentType: application/json
-        schema: ${file(models/update-book-request.json)}
+        schema: ${file(api/change-status-request.json)}
 
 #TODO: need to add search using elasticksearch
 #TODO: need to have unit test
@@ -64,8 +62,8 @@ custom:
 #TODO: need to check req validation body
 functions:
 
-  Auth:
-    handler: src/lambda/auth/auth0Authorizer.handler
+#  Auth:
+#    handler: src/lambda/auth/auth0Authorizer.handler
 
   GetBooks:
     handler: src/lambda/http/getBooks.handler
@@ -74,6 +72,7 @@ functions:
           method: get
           path: books
           cors: true
+#          authorizer: Auth
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -87,6 +86,7 @@ functions:
           method: get
           path: books/{bookId}
           cors: true
+#          authorizer: Auth
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -100,13 +100,13 @@ functions:
           method: post
           path: books
           cors: true
-          authorizer: Auth
+#          authorizer: Auth
           reqValidatorName: BodyBookRequestValidator
           documentation:
             summary: Create a new book
             description: Create a new book
             requestModels:
-              'application/json': CreateBookRequest
+              'application/json': SaveBookRequest
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -120,8 +120,13 @@ functions:
           method: patch
           path: books/{bookId}
           cors: true
-          authorizer: Auth
+#          authorizer: Auth
           reqValidatorName: BodyBookRequestValidator
+          documentation:
+            summary: Update a new book
+            description: Update a new book
+            requestModels:
+              'application/json': SaveBookRequest
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -133,14 +138,19 @@ functions:
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USER_BOOKS_TABLE}
 
   ChangeBookStatus:
-    handler: src/lambda/http/updateBook.handler
+    handler: src/lambda/http/changeBookStatus.handler
     events:
       - http:
           method: patch
           path: books/{bookId}/changeStatus
           cors: true
-          authorizer: Auth
+#          authorizer: Auth
           reqValidatorName: BodyBookRequestValidator
+          documentation:
+            summary: Change user book status
+            description: Change user book status
+            requestModels:
+              'application/json': ChangeBookStatusRequest
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -158,7 +168,7 @@ functions:
           method: delete
           path: books/{bookId}
           cors: true
-          authorizer: Auth
+#          authorizer: Auth
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -174,8 +184,9 @@ functions:
     events:
       - http:
           method: post
-          path: books/{bookId}/attachment
+          path: books/{bookId}/cover
           cors: true
+#          authorizer: Auth
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -263,4 +274,4 @@ resources:
               Principal: '*'
               Action: 's3:GetObject'
               Resource: 'arn:aws:s3:::${self:provider.environment.BOOKS_COVER_BUCKET}/*'
-        Bucket: !Ref AttachmentBucket
+        Bucket: !Ref BooksCoverBucket
