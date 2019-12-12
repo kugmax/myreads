@@ -1,24 +1,16 @@
+
+//TODO:
+
 // changeBookStatus(userId, bookId, newStatus)
-
-
-// const deletedBookId = await deleteBook(userId, bookId);
-
-// const books: UserBook[] = await getUserBooks(userId, limit, nextKey);
 // const url = await generateUploadBookCoverUrl(bookId)
-
-
-
-//  TODO: need return result
-// const items = result.Items;
-// return items as UserBook[];
-// lastEvaluatedKey
 
 import { SaveBookRequest } from "../request/SaveBookRequest";
 import { UserBook } from "../model/UserBook";
 import { UserBookStore } from "../lambda/store/userBookStore";
 
 import * as uuid from 'uuid';
-import {UserBookStatus} from "../model/UserBookStatus";
+import { UserBookStatus } from "../model/UserBookStatus";
+import {UserBookReport} from "../model/UserBookReport";
 
 const userBookStore = new UserBookStore();
 
@@ -77,6 +69,21 @@ export class UserBookManager {
 
   async getBook(userId: string, bookId: string): Promise<UserBook> {
     return userBookStore.getBookById(userId, bookId);
+  }
+
+  async getBooks(userId: string, limit: number, nextKey: string): Promise<UserBookReport> {
+    return userBookStore.getBookByUserId(userId, limit, nextKey);
+  }
+
+  async deleteBook(userId: string, bookId: string): Promise<UserBook> {
+    const book: UserBook = await this.getBook(userId, bookId);
+
+    if (!book) {
+      return undefined;
+    }
+
+    await userBookStore.delete(book);
+    return book;
   }
 
 }

@@ -4,6 +4,7 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import { createLogger } from '../utils/logger'
 
 import { UserBook } from '../../model/UserBook'
+import {UserBookReport} from "../../model/UserBookReport";
 
 const logger = createLogger('useBookStore');
 const XAWS = AWSXRay.captureAWS(AWS);
@@ -18,7 +19,7 @@ export class UserBookStore {
 
   }
 
-  async getBookByUserId(userId: string, limit: number, nextKey: string): Promise<result> {
+  async getBookByUserId(userId: string, limit: number, nextKey: string): Promise<UserBookReport> {
     const result = await this.docClient.query({
       TableName: this.bookTable,
       IndexName: this.bookIndexName,
@@ -33,7 +34,13 @@ export class UserBookStore {
 
     logger.info("getBookByUserId:", result);
 
-    return result;
+    const items: UserBook[] = result.Items as UserBook[];
+    const newNextKey = result.lastEvaluatedKey;
+
+    return {
+      books: items,
+      nextKey: newNextKey
+    }
   }
 
   async getBookById(userId: string, bookId: string): Promise<UserBook> {
@@ -69,7 +76,7 @@ export class UserBookStore {
     await this.docClient.delete({
       TableName: this.bookTable,
       Key: {
-        "userId": book.userId,
+        "bookId": book.bookId,
         "createdAt": book.createdAt
       }
     }, logResponse)

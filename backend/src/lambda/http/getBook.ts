@@ -2,13 +2,14 @@ import 'source-map-support/register'
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 
-import { getBookById } from '../../manager/bookManager'
+import { UserBookManager } from '../../manager/bookManager'
 import { getUserId } from '../utils'
 import * as middy from 'middy'
 import { cors } from 'middy/middlewares'
 import { createLogger } from "../../utils/logger";
 
 const logger = createLogger('get');
+const bookManager = new UserBookManager();
 
 export const handler = middy(async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const bookId = event.pathParameters.bookId;
@@ -17,7 +18,7 @@ export const handler = middy(async (event: APIGatewayProxyEvent): Promise<APIGat
 
   const userId = getUserId(event);
 
-  const book = await getBookById(userId, bookId);
+  const book = await bookManager.getBook(userId, bookId);
   logger.info('Get book:', book);
 
   return {

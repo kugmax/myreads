@@ -2,29 +2,30 @@ import 'source-map-support/register'
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 
-import { getUserBooks } from '../../manager/bookManager'
+import { UserBookManager } from '../../manager/bookManager'
 import { getUserId, getQueryParameter } from '../utils'
 import * as middy from 'middy'
 import { cors } from 'middy/middlewares'
 import { createLogger } from "../../utils/logger";
-import { UserBook } from "../../model/UserBook";
+import {UserBookReport} from "../../model/UserBookReport";
 
 const logger = createLogger('report');
+const bookManager = new UserBookManager();
 
 export const handler = middy(async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-  const limit = getQueryParameter(event,"limit");
+  const limit = Number(getQueryParameter(event,"limit"));
   const nextKey = getQueryParameter(event, "nextKey");
   const userId = getUserId(event);
 
   logger.info('Get books by user: ', userId, limit, nextKey);
 
-  const books: UserBook[] = await getUserBooks(userId, limit, nextKey);
-  logger.info('User books:', books);
+  const bookReport: UserBookReport = await bookManager.getBooks(userId, limit, nextKey);
+  logger.info('User books:', bookReport);
 
   return {
     statusCode: 200,
     body: JSON.stringify({
-      books: books
+      ...bookReport
     })
   }
 });
