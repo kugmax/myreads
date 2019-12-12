@@ -1,9 +1,3 @@
-
-//TODO:
-
-// changeBookStatus(userId, bookId, newStatus)
-// const url = await generateUploadBookCoverUrl(bookId)
-
 import { SaveBookRequest } from "../request/SaveBookRequest";
 import { UserBook } from "../model/UserBook";
 import { UserBookStore } from "../lambda/store/userBookStore";
@@ -84,6 +78,16 @@ export class UserBookManager {
 
     await userBookStore.delete(book);
     return book;
+  }
+
+  async changeBookStatus(userId: string, bookId: string, newStatus: string): Promise<string> {
+    console.log("changeBookStatus: ", userId, bookId, newStatus);
+    return undefined;
+  }
+
+  async generateUploadBookCoverUrl(bookId: string): Promise<string> {
+    console.log("generateUploadBookCoverUrl: ", bookId);
+    return undefined;
   }
 
 }

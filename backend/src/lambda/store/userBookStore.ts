@@ -1,7 +1,7 @@
 import * as AWS  from 'aws-sdk'
 import * as AWSXRay from 'aws-xray-sdk'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
-import { createLogger } from '../utils/logger'
+import { createLogger } from '../../utils/logger'
 
 import { UserBook } from '../../model/UserBook'
 import {UserBookReport} from "../../model/UserBookReport";
@@ -24,7 +24,9 @@ export class UserBookStore {
       TableName: this.bookTable,
       IndexName: this.bookIndexName,
       Limit: limit,
-      ExclusiveStartKey: nextKey,
+      ExclusiveStartKey: {
+        Key: nextKey
+      },
       KeyConditionExpression: 'userId = :userId',
       ExpressionAttributeValues: {
         ':userId': userId
@@ -35,7 +37,7 @@ export class UserBookStore {
     logger.info("getBookByUserId:", result);
 
     const items: UserBook[] = result.Items as UserBook[];
-    const newNextKey = result.lastEvaluatedKey;
+    const newNextKey = result.LastEvaluatedKey.key;
 
     return {
       books: items,
