@@ -10,5 +10,5 @@
   "required": [
     "newStatus"
   ],
-  "additionalProperties": false
+  "additionalProperties": true
 }

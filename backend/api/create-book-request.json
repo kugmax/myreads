@@ -22,5 +22,5 @@
   "required": [
     "title"
   ],
-  "additionalProperties": false
+  "additionalProperties": true
 }
