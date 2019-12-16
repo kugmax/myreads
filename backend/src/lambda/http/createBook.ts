@@ -15,12 +15,12 @@ const bookManager = new UserBookManager();
 export const handler = middy(async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const newBook: SaveBookRequest = JSON.parse(event.body);
 
-  logger.info('Create book: ', newBook);
+  logger.info(`Create book: ${newBook}`);
 
   const userId = getUserId(event);
 
   const newItem = await bookManager.saveBook(userId, null, newBook);
-  logger.info('New book created:', newItem);
+  logger.info(`New book created: ${newItem}`);
 
   return {
     statusCode: 201,

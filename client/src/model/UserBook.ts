@@ -8,6 +8,6 @@ export interface UserBook {
   author: string,
   description: string
   isbn: string
-  pages: number
+  pages: number,
   coverUrl: string
 }

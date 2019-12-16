@@ -5,8 +5,11 @@ import { UserBookStore } from "../lambda/store/userBookStore";
 import * as uuid from 'uuid';
 import { UserBookStatus } from "../model/UserBookStatus";
 import {UserBookReport} from "../model/UserBookReport";
+import {createLogger} from "../utils/logger";
 
 const userBookStore = new UserBookStore();
+const coverBucket = process.env.BOOKS_COVER_BUCKET;
+const logger = createLogger('create');
 
 export class UserBookManager {
 
@@ -37,7 +40,10 @@ export class UserBookManager {
       description: saveBookRequest.description,
       isbn: saveBookRequest.isbn,
       pages: saveBookRequest.pages,
+      coverUrl: `https://${coverBucket}.s3.amazonaws.com/${userId}/${bookId}`
     };
+
+    logger.info(`createNewBook: ${JSON.stringify(userBook)}`);
 
     return userBookStore.saveOrUpdate(userBook);
   }
@@ -56,7 +62,10 @@ export class UserBookManager {
       description: saveBookRequest.description,
       isbn: saveBookRequest.isbn,
       pages: saveBookRequest.pages,
+      coverUrl: savedBook.coverUrl
     };
+
+    logger.info(`updateBook: ${JSON.stringify(userBook)}`);
 
     return userBookStore.saveOrUpdate(userBook);
   }

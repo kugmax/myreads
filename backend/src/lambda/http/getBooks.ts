@@ -17,10 +17,10 @@ export const handler = middy(async (event: APIGatewayProxyEvent): Promise<APIGat
   const nextKey = getQueryParameter(event, "nextKey");
   const userId = getUserId(event);
 
-  logger.info('Get books by user: ', userId, limit, nextKey);
+  logger.info(`Get books by user: ${userId}, ${limit}, ${nextKey}`);
 
   const bookReport: UserBookReport = await bookManager.getBooks(userId, limit, nextKey);
-  logger.info('User books:', bookReport);
+  logger.info(`User books: ${JSON.stringify(bookReport)}`);
 
   return {
     statusCode: 200,

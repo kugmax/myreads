@@ -35,6 +35,7 @@ export default class Auth {
       if (authResult && authResult.accessToken && authResult.idToken) {
         console.log('Access token: ', authResult.accessToken);
         console.log('id token: ', authResult.idToken);
+        console.log('expiresIn: ', authResult.expiresIn);
         this.setSession(authResult);
       } else if (err) {
         this.history.replace('/');
@@ -63,7 +64,7 @@ export default class Auth {
     this.expiresAt = expiresAt;
 
     // navigate to the home route
-    this.history.replace('/');
+    this.history.replace('/home');
   }
 
   renewSession() {

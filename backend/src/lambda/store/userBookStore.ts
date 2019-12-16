@@ -1,6 +1,6 @@
 import * as AWS  from 'aws-sdk'
 import * as AWSXRay from 'aws-xray-sdk'
-import { DocumentClient } from 'aws-sdk/clients/dynamodb'
+import {DocumentClient} from 'aws-sdk/clients/dynamodb'
 import { createLogger } from '../../utils/logger'
 
 import { UserBook } from '../../model/UserBook'
@@ -20,24 +20,31 @@ export class UserBookStore {
   }
 
   async getBookByUserId(userId: string, limit: number, nextKey: string): Promise<UserBookReport> {
-    const result = await this.docClient.query({
+    let queryParams: any = {
       TableName: this.bookTable,
       IndexName: this.bookIndexName,
       Limit: limit,
-      ExclusiveStartKey: {
-        Key: nextKey
-      },
       KeyConditionExpression: 'userId = :userId',
       ExpressionAttributeValues: {
         ':userId': userId
       }
-    })
-    .promise();
+    };
 
-    logger.info("getBookByUserId:", result);
+    if (nextKey) {
+      logger.info(`add nextKey to query : ${nextKey}`);
+
+      queryParams.ExclusiveStartKey = {
+        Key: nextKey
+      }
+    }
+
+    logger.info(`getBookByUserId.queryParams: ${JSON.stringify( queryParams ) }`);
+
+    const result = await this.docClient.query(queryParams).promise();
+    logger.info(`getBookByUserId: ${JSON.stringify(result)}`);
 
     const items: UserBook[] = result.Items as UserBook[];
-    const newNextKey = result.LastEvaluatedKey.key;
+    const newNextKey = result.LastEvaluatedKey ? result.LastEvaluatedKey.Key : undefined;
 
     return {
       books: items,
@@ -58,7 +65,7 @@ export class UserBookStore {
     .promise();
 
     if (result.Count == 0) {
-      logger.warn("Book by id not found ", bookId);
+      logger.warn(`Book by id not found: ${bookId}`);
       return null;
     }
 
