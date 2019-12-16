@@ -3,7 +3,7 @@ import './App.css';
 import { Route, Switch} from 'react-router-dom'
 import Auth from "./auth/Auth";
 import Books from "./containers/Books";
-import EditBook from "./containers/EditBook";
+import {EditBook} from "./containers/EditBook";
 import Login from "./containers/Login";
 
 export interface AppProps {

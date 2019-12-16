@@ -6,6 +6,7 @@ import { getBooks } from '../../api/books-api'
 import { UserBook } from "../../model/UserBook";
 import { UserBookReport } from "../../model/UserBookReport";
 import { BooksList } from "../../components/BooksList";
+import { Button } from '@material-ui/core';
 
 interface BooksProps {
   auth: Auth
@@ -42,9 +43,17 @@ export default class Books extends Component<BooksProps, BooksState> {
     }
   }
 
+  //TODO: need to fix path: /books/${bookId}/edit  /books/new
+  onEditButtonClick = (bookId: string) => {
+    this.props.history.push(`/books/${bookId}/edit`)
+  };
+
   render() {
     return (
+        <div>
+        <Button variant="contained" onClick={() => this.onEditButtonClick("0")} >Add new book</Button>
         <BooksList list={this.state.books}/>
+        </div>
     );
   }
 }
