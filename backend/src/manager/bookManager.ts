@@ -1,3 +1,6 @@
+import * as AWS  from 'aws-sdk'
+import * as AWSXRay from 'aws-xray-sdk'
+
 import { SaveBookRequest } from "../request/SaveBookRequest";
 import { UserBook } from "../model/UserBook";
 import { UserBookStore } from "../lambda/store/userBookStore";
@@ -7,9 +10,16 @@ import { UserBookStatus } from "../model/UserBookStatus";
 import {UserBookReport} from "../model/UserBookReport";
 import {createLogger} from "../utils/logger";
 
+
 const userBookStore = new UserBookStore();
 const coverBucket = process.env.BOOKS_COVER_BUCKET;
+const uploadUrlExpiration = process.env.BOOKS_COVER_URL_EXP_SECONDS;
 const logger = createLogger('create');
+
+const XAWS = AWSXRay.captureAWS(AWS);
+const s3 = new XAWS.S3({
+  signatureVersion: 'v4'
+});
 
 export class UserBookManager {
 
@@ -94,9 +104,11 @@ export class UserBookManager {
     return undefined;
   }
 
-  async generateUploadBookCoverUrl(bookId: string): Promise<string> {
-    console.log("generateUploadBookCoverUrl: ", bookId);
-    return undefined;
+  async generateUploadBookCoverUrl(userId: string, bookId: string): Promise<string> {
+    return s3.getSignedUrl('putObject', {
+      Bucket: coverBucket,
+      Key: userId + "/" + bookId,
+      Expires: uploadUrlExpiration
+    })
   }
-
 }

@@ -16,6 +16,7 @@ export async function getBooks(idToken: string, limit: number = 5, nextKey?: str
     },
   });
   console.log('Books:', response.data);
+  //TODO: here need to check at empty response, using unit test
   return response.data;
 }
 
@@ -30,7 +31,7 @@ export async function saveBook(
     }
   });
 
-  //TODO: here need to check at empty response
+  //TODO: here need to check at empty response, unit test
   return response.data.book
 }
 
@@ -46,23 +47,23 @@ export async function deleteBook(
   })
 }
 
-// export async function getUploadUrl(
-//     idToken: string,
-//     bookId: string
-// ): Promise<string> {
-//   const response = await Axios.post(`${apiEndpoint}/books/${bookId}/cover`, '', {
-//     headers: {
-//       'Content-Type': 'application/json',
-//       'Authorization': `Bearer ${idToken}`
-//     }
-//   })
-//   return response.data.uploadUrl
-// }
-//
-// export async function uploadFile(uploadUrl: string, file: Buffer, fileType: string): Promise<void> {
-//   await Axios.put(uploadUrl, file, {
-//     headers: {
-//       'Content-Type': fileType
-//     }
-//   })
-// }
+export async function getUploadUrl(
+    idToken: string,
+    bookId: string
+): Promise<string> {
+  const response = await Axios.post(`${apiEndpoint}/books/${bookId}/cover`, '', {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${idToken}`
+    }
+  });
+  return response.data.uploadUrl
+}
+
+export async function uploadFile(uploadUrl: string, file: File): Promise<void> {
+  await Axios.put(uploadUrl, file, {
+    headers: {
+      'Content-Type': file.type
+    }
+  })
+}
