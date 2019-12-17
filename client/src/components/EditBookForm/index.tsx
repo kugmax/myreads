@@ -1,7 +1,8 @@
-import React, {useState} from "react";
+import React, {useState, MouseEvent} from "react";
 import TextField from '@material-ui/core/TextField';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import {UserBookFormValues} from "../../containers/EditBook/BookFormValues";
+import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -16,10 +17,11 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface EditBookFormProps {
   book: UserBookFormValues,
-  handleChange: (name: string, value: string|number) => void
+  handleChange: (name: string, value: string|number) => void,
+  handleSave: (event: MouseEvent<HTMLButtonElement>) => void
 }
 
-export const EditBookForm: React.FC<EditBookFormProps> = ( {book, handleChange} ) => {
+export const EditBookForm: React.FC<EditBookFormProps> = ( {book, handleChange, handleSave} ) => {
   const classes = useStyles();
 
   return (
@@ -69,7 +71,8 @@ export const EditBookForm: React.FC<EditBookFormProps> = ( {book, handleChange} 
               variant="outlined"
           />
         </div>
-      {/*  TODO: add submit*/}
+
+        <Button variant="contained" color="primary" onClick={handleSave}>Save</Button>
       </form>
   );
 };

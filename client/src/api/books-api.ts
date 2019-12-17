@@ -16,9 +16,7 @@ export async function getBooks(idToken: string, limit: number = 5, nextKey?: str
     },
   });
   console.log('Books:', response.data);
-
-  //TODO: here need to check at empty response
-  return response.data.items
+  return response.data;
 }
 
 export async function saveBook(

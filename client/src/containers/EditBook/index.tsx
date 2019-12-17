@@ -1,7 +1,8 @@
-import React, {Component, useState} from 'react';
+import React, {Component, MouseEvent, useState} from 'react';
 import Auth from "../../auth/Auth";
 import { History } from 'history'
 import {EditBookForm} from "../../components/EditBookForm";
+import { saveBook } from '../../api/books-api'
 
 interface EditBookProps {
   auth: Auth
@@ -25,7 +26,14 @@ export const EditBook: React.FC<EditBookProps> = ( props ) => {
     });
   };
 
+  const handleSave = async (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
+    await saveBook(props.auth.getIdToken(), book);
+    props.history.push(`/home`);
+  };
+
   return (
-      <EditBookForm book={book} handleChange={handleChange}/>
+      <EditBookForm book={book} handleChange={handleChange} handleSave={handleSave} />
   );
 };
