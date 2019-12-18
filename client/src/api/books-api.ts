@@ -3,8 +3,15 @@ import { UserBook } from '../model/UserBook';
 import Axios from 'axios'
 import { SaveBookRequest } from './request/SaveBookRequest';
 import {UserBookReport} from "../model/UserBookReport";
+import {mockUserBookReport} from "../__mocks__/api/books-api-mock";
+
+const USE_MOCK = true;
 
 export async function getBooks(idToken: string, limit: number = 5, nextKey?: string): Promise<UserBookReport> {
+  if ( USE_MOCK ) {
+    return mockUserBookReport;
+  }
+
   console.log('Fetching books');
 
   let query = `?limit=${limit}` + (nextKey ? `&nextKey=${nextKey}` : ``);
@@ -39,6 +46,10 @@ export async function deleteBook(
     idToken: string,
     bookId: string
 ): Promise<void> {
+  if ( USE_MOCK ) {
+    return;
+  }
+
   await Axios.delete(`${apiEndpoint}/books/${bookId}`, {
     headers: {
       'Content-Type': 'application/json',

@@ -1,59 +1,55 @@
-import React, { Component } from 'react';
+import React, {useState, useEffect} from 'react';
 import Auth from "../../auth/Auth";
 import { History } from 'history'
 
 import { getBooks } from '../../api/books-api'
-import { UserBook } from "../../model/UserBook";
 import { UserBookReport } from "../../model/UserBookReport";
 import { BooksList } from "../../components/BooksList";
 import { Button } from '@material-ui/core';
+import Grid from "@material-ui/core/Grid";
 
 interface BooksProps {
   auth: Auth
   history: History
 }
 
-interface BooksState {
-  books: UserBook[],
-  nextKey?: string,
-  loading: boolean
-}
+export const Books: React.FC<BooksProps> = ( {auth, history} ) => {
+  const [bookReport, setBookReport] = useState({books: [], nextKey: ''} as UserBookReport);
+  const [nextKey, setNextKey] = useState('');
+  const [loading, setLoading] = useState(true);
 
-export default class Books extends Component<BooksProps, BooksState> {
-  state: BooksState = {
-    books: [],
-    nextKey: '',
-    loading: true
-  };
+  useEffect( () => {
+    fetchBooks();
+  }, [false]);
 
-  async componentDidMount() {
-    await this.fetchBooks();
-  }
-
-  async fetchBooks() {
+  const fetchBooks = async () => {
     try {
-      const bookReport: UserBookReport = await getBooks(this.props.auth.getIdToken(), 5, this.state.nextKey);
-      this.setState({
-        books: bookReport.books,
-        nextKey: bookReport.nextKey,
-        loading: false
-      })
+      const bookReport: UserBookReport = await getBooks(auth.getIdToken(), 5, nextKey);
+      setBookReport(bookReport);
+      setLoading(false);
     } catch (e) {
       alert(`Failed to fetch books: ${e.message}`);
     }
-  }
-
-  //TODO: need to fix path: /books/${bookId}/edit  /books/new
-  onEditButtonClick = (bookId: string) => {
-    this.props.history.push(`/books/${bookId}/edit`)
   };
 
-  render() {
-    return (
-        <div>
-        <Button variant="contained" onClick={() => this.onEditButtonClick("0")} >Add new book</Button>
-        <BooksList list={this.state.books}/>
-        </div>
-    );
-  }
-}
+  //TODO: need to fix path: /books/${bookId}/edit  /books/new
+  const onEditButtonClick = (bookId: string) => {
+    history.push(`/books/${bookId}/edit`)
+  };
+
+  return (
+      <Grid container
+            spacing={3}
+            direction={"column"}>
+
+        <Grid item xs={12}>
+          <Button variant="contained" onClick={() => onEditButtonClick("0")} >Add new book</Button>
+        </Grid>
+
+        <Grid item xs={12}>
+          <BooksList list={bookReport.books}/>
+        </Grid>
+
+      </Grid>
+  );
+};

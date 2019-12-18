@@ -1,32 +1,42 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Auth from "../../auth/Auth";
 import Button from "@material-ui/core/Button";
+import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
 
 interface LoginProps {
   auth: Auth
 }
 
-interface LoginState {}
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+      root: {
+        align: "right"
+      },
+    }),
+);
 
-export default class Login extends Component<LoginProps, LoginState> {
+export const Login: React.FC<LoginProps> = ( {auth }) => {
 
-  handleLogin = () => {
-    this.props.auth.login()
+  const classes = useStyles();
+
+  const handleLogin = () => {
+    auth.login()
   };
 
-  handleLogout = () => {
-    this.props.auth.logout()
+  const handleLogout = () => {
+    auth.logout()
   };
 
-  render() {
-    if (this.props.auth.isAuthenticated()) {
-      return (
-          <Button variant="contained" onClick={this.handleLogout}>Logout</Button>
-      )
-    } else {
-      return (
-          <Button variant="contained" onClick={this.handleLogin}>Login</Button>
-      )
-    }
-  }
+  const renderButton = () => {
+    return auth.isAuthenticated() ?
+        <Button variant="contained" onClick={handleLogout}>Logout</Button>
+        :
+        <Button variant="contained" onClick={handleLogin}>Login</Button>
+  };
+
+  return (
+      <div className={classes.root}>
+       {renderButton()}
+     </div>
+  )
 };

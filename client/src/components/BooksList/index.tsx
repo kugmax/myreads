@@ -14,9 +14,13 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.background.paper,
   },
   gridList: {
-    width: 500,
-    height: 450,
+    // width: 200,
+    height: 1000,
   },
+  img: {
+    width: "auto",
+    height: "100%"
+  }
 }));
 
 interface BooksListProps {
@@ -29,8 +33,8 @@ export const BooksList: React.FC<BooksListProps> = ( {list} ) => {
   return (
       <GridList cellHeight={160} className={classes.gridList} cols={1}>
         {list.map(book => (
-            <GridListTile key={book.coverUrl} cols={1}>
-              <img src={book.coverUrl} alt={book.title} />
+            <GridListTile key={book.bookId} cols={1}>
+              <img src={book.coverUrl} alt={book.title} className={classes.img} />
             </GridListTile>
         ))}
       </GridList>

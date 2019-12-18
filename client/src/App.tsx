@@ -1,30 +1,33 @@
-import React, { Component } from 'react';
+import React from 'react';
 import './App.css';
 import { Route, Switch} from 'react-router-dom'
 import Auth from "./auth/Auth";
-import Books from "./containers/Books";
+import {Books} from "./containers/Books";
 import {EditBook} from "./containers/EditBook";
-import Login from "./containers/Login";
+import {Login} from "./containers/Login";
+import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 
 export interface AppProps {
   auth: Auth
   history: any
 }
 
-export interface AppState {}
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+      root: {
+        flexGrow: 1,
+        margin: 10
+      }
+    }),
+);
 
-export default class App extends Component<AppProps, AppState> {
-  render() {
-    return (
-        <div>
-          <Login auth={this.props.auth}/>
-          {this.generateCurrentPage()}
-        </div>
-    )
-  }
+export const App: React.FC<AppProps> = ( {auth, history }) => {
 
-  generateCurrentPage() {
-    if (!this.props.auth.isAuthenticated()) {
+  const classes = useStyles();
+
+  const generateCurrentPage = () => {
+    if (!auth.isAuthenticated()) {
       return <div> Welcome </div>
     }
 
@@ -34,7 +37,7 @@ export default class App extends Component<AppProps, AppState> {
               path="/home"
               exact
               render={props => {
-                return <Books {...props} auth={this.props.auth} />
+                return <Books {...props} auth={auth} />
               }}
           />
 
@@ -42,10 +45,34 @@ export default class App extends Component<AppProps, AppState> {
               path="/books/:bookId/edit"
               exact
               render={props => {
-                return <EditBook {...props} auth={this.props.auth} />
+                return <EditBook {...props} auth={auth} />
               }}
           />
         </Switch>
     )
-  }
-}
+  };
+
+  return (
+      <div className={classes.root}>
+        <Grid container
+              spacing={3}
+              justify={"flex-end"}
+              alignItems="flex-end">
+
+          <Grid item xs={3}>
+            <Login auth={auth}/>
+          </Grid>
+        </Grid>
+
+        <Grid container
+              spacing={3}
+              direction={"column"}
+              justify={"center"}
+              alignItems="center">
+          <Grid item xs={12}>
+            {generateCurrentPage()}
+          </Grid>
+        </Grid>
+      </div>
+  );
+};
