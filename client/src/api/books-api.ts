@@ -5,7 +5,7 @@ import { SaveBookRequest } from './request/SaveBookRequest';
 import {UserBookReport} from "../model/UserBookReport";
 import {mockUserBook_1, mockUserBookReport} from "../__mocks__/api/books-api-mock";
 
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 export async function getBooks(idToken: string, limit: number = 5, nextKey?: string): Promise<UserBookReport> {
   if ( USE_MOCK ) {

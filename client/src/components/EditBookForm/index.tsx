@@ -29,11 +29,12 @@ interface EditBookFormProps {
   handleSave: (event: MouseEvent<HTMLButtonElement>) => void
   handleAddFileToUpload: (files: File[]) => void,
   handleUpload: (event: MouseEvent<HTMLButtonElement>) => void,
-  activeStep: number
+  activeStep: number,
+  loading: boolean
 }
 
 export const EditBookForm: React.FC<EditBookFormProps> = (
-    {book, handleChange, handleSave, handleAddFileToUpload, handleUpload, activeStep}
+    {book, handleChange, handleSave, handleAddFileToUpload, handleUpload, activeStep, loading}
     ) => {
   const classes = useStyles();
   return (
@@ -87,7 +88,10 @@ export const EditBookForm: React.FC<EditBookFormProps> = (
                     variant="outlined"
                 />
               </div>
-              <div><Button variant="contained" color="primary" onClick={handleSave}>Next</Button></div>
+              <div><Button variant="contained"
+                           color="primary"
+                           disabled={loading}
+                           onClick={handleSave}>Next</Button></div>
             </form>
           </StepContent>
         </Step>
@@ -103,7 +107,7 @@ export const EditBookForm: React.FC<EditBookFormProps> = (
                   showAlerts={false}
                   onChange={handleAddFileToUpload}/>
             </div>
-            <div><Button variant="contained" color="primary" onClick={handleUpload}>Finish</Button></div>
+            <div><Button variant="contained" color="primary" disabled={loading} onClick={handleUpload}>Finish</Button></div>
           </StepContent>
         </Step>
       </Stepper>

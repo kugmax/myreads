@@ -28,6 +28,7 @@ export const EditBook: React.FC<EditBookProps> = ( props ) => {
   const [bookId, setBookId] = useState('');
 
   const [activeStep, setActiveStep] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (name: string, value:string | number) => {
     setBook(prevState => {
@@ -38,6 +39,7 @@ export const EditBook: React.FC<EditBookProps> = ( props ) => {
   const handleSave = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
+    setLoading(true);
     try {
       const savedBook: UserBook = await saveBook(props.auth.getIdToken(), book);
       setBookId(savedBook.bookId);
@@ -49,11 +51,12 @@ export const EditBook: React.FC<EditBookProps> = ( props ) => {
       console.log(e);
       enqueueSnackbar(e.message, {variant: 'error'});
     }
+    setLoading(false);
   };
 
   const handleUpload = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-
+    setLoading(true);
     try {
       const uploadUrl = await getUploadUrl(props.auth.getIdToken(), bookId);
       await uploadFile(uploadUrl, cover);
@@ -64,6 +67,7 @@ export const EditBook: React.FC<EditBookProps> = ( props ) => {
       console.log(e);
       enqueueSnackbar(e.message, {variant: 'error'});
     }
+    setLoading(false);
   };
 
   const handleAddFileToUpload = async (files: File[]) => {
@@ -82,7 +86,8 @@ export const EditBook: React.FC<EditBookProps> = ( props ) => {
                     handleSave={handleSave}
                     handleAddFileToUpload={handleAddFileToUpload}
                     handleUpload={handleUpload}
-                    activeStep={activeStep}/>
+                    activeStep={activeStep}
+                    loading={loading}/>
 
   );
 };
