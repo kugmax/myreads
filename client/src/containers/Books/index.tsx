@@ -7,6 +7,7 @@ import { UserBookReport } from "../../model/UserBookReport";
 import { BooksList } from "../../components/BooksList";
 import { Button } from '@material-ui/core';
 import Grid from "@material-ui/core/Grid";
+import { deleteBook  } from '../../api/books-api'
 
 interface BooksProps {
   auth: Auth
@@ -37,17 +38,22 @@ export const Books: React.FC<BooksProps> = ( {auth, history} ) => {
     history.push(`/books/${bookId}/edit`)
   };
 
+  const onDelete = async (bookId: string) => {
+    console.log("delete " + bookId);
+    await deleteBook(auth.getIdToken(), bookId);
+  };
+
   return (
       <Grid container
             spacing={3}
-            direction={"column"}>
-
+            direction={"column"}
+      >
         <Grid item xs={12}>
           <Button variant="contained" onClick={() => onEditButtonClick("0")} >Add new book</Button>
         </Grid>
 
         <Grid item xs={12}>
-          <BooksList list={bookReport.books}/>
+          <BooksList list={bookReport.books} handleDelete={onDelete}/>
         </Grid>
 
       </Grid>

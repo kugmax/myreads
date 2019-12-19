@@ -1,9 +1,12 @@
-import React from 'react';
+import React, {MouseEvent} from 'react';
 import {UserBook} from "../../model/UserBook";
 
 import { makeStyles } from '@material-ui/core/styles';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
+import GridListTileBar from '@material-ui/core/GridListTileBar';
+import IconButton from '@material-ui/core/IconButton';
+import HighlightOffOutlinedIcon from '@material-ui/icons/HighlightOffOutlined';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -14,29 +17,70 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.background.paper,
   },
   gridList: {
-    // width: 200,
-    height: 1000,
+    width: 305,
   },
   img: {
+    width: 150,
+    height: 200,
+  },
+  icon: {
+    color: 'rgba(255, 255, 255, 0.54)',
+  },
+  tile: {
+
+  },
+  tileBar: {
     width: "auto",
-    height: "100%"
+    background:
+    'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)'
+  },
+  delBar: {
+    background:
+        'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, ' +
+        'rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
+  },
+  delIcon: {
+    color: 'white',
   }
 }));
 
 interface BooksListProps {
-  list: UserBook[]
+  list: UserBook[],
+  handleDelete: (bookId: string) => void
 }
 
-export const BooksList: React.FC<BooksListProps> = ( {list} ) => {
+export const BooksList: React.FC<BooksListProps> = ( {list, handleDelete} ) => {
   const classes = useStyles();
 
   return (
-      <GridList cellHeight={160} className={classes.gridList} cols={1}>
+      <div  className={classes.root}>
+      <GridList
+          cellHeight="auto"
+          className={classes.gridList}
+          cols={2}>
         {list.map(book => (
-            <GridListTile key={book.bookId} cols={1}>
-              <img src={book.coverUrl} alt={book.title} className={classes.img} />
+            <GridListTile key={book.bookId} className={classes.tile}>
+                <img src={book.coverUrl} alt={book.title} className={classes.img} />
+                <GridListTileBar
+                    titlePosition="top"
+                    actionIcon={
+                      <IconButton className={classes.delIcon} onClick={() => {handleDelete(book.bookId)}} >
+                        <HighlightOffOutlinedIcon />
+                      </IconButton>
+                    }
+                    actionPosition="right"
+                    className={classes.delBar}
+                />
+
+                <GridListTileBar
+                    title={book.title}
+                    subtitle={<span>by: {book.author}</span>}
+                    className={classes.tileBar}
+                />
+
             </GridListTile>
         ))}
       </GridList>
+      </div>
   );
 };

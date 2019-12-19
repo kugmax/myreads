@@ -27,6 +27,19 @@ export const mockUserBookReport: UserBookReport = {
       isbn: "123456789",
       pages: 66,
       coverUrl: "/mock_cover.jpg"
+    },
+    {
+      userId: "3",
+      createdAt: '',
+      updatedAt: '',
+      status: 'NONE',
+      bookId: "12",
+      title: "Title 3",
+      author: "Author 3",
+      description: "desc 3",
+      isbn: "123456789",
+      pages: 67,
+      coverUrl: "/mock_cover.jpg"
     }
   ]
 
