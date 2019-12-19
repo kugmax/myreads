@@ -1,9 +1,11 @@
-import React, {ChangeEvent, Component, MouseEvent, useState} from 'react';
+import React, {MouseEvent, useState} from 'react';
 import Auth from "../../auth/Auth";
 import { History } from 'history'
 import {EditBookForm} from "../../components/EditBookForm";
 import { saveBook, getUploadUrl, uploadFile  } from '../../api/books-api'
 import {UserBook} from "../../model/UserBook";
+
+import { useSnackbar } from 'notistack';
 
 interface EditBookProps {
   auth: Auth
@@ -19,9 +21,13 @@ const DEFAULT_BOOK = {
 };
 
 export const EditBook: React.FC<EditBookProps> = ( props ) => {
+  const { enqueueSnackbar } = useSnackbar();
+
   const [book, setBook] = useState(DEFAULT_BOOK);
   const [cover, setCover] = useState({} as File);
   const [bookId, setBookId] = useState('');
+
+  const [activeStep, setActiveStep] = useState(0);
 
   const handleChange = (name: string, value:string | number) => {
     setBook(prevState => {
@@ -32,19 +38,32 @@ export const EditBook: React.FC<EditBookProps> = ( props ) => {
   const handleSave = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    const savedBook: UserBook = await saveBook(props.auth.getIdToken(), book);
-    setBookId(savedBook.bookId);
-  //  TODO: error handling
+    try {
+      const savedBook: UserBook = await saveBook(props.auth.getIdToken(), book);
+      setBookId(savedBook.bookId);
+
+      enqueueSnackbar('Saved', {variant: 'success'});
+
+      setActiveStep(1);
+    } catch (e) {
+      console.log(e);
+      enqueueSnackbar(e.message, {variant: 'error'});
+    }
   };
 
   const handleUpload = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    const uploadUrl = await getUploadUrl(props.auth.getIdToken(), bookId);
+    try {
+      const uploadUrl = await getUploadUrl(props.auth.getIdToken(), bookId);
+      await uploadFile(uploadUrl, cover);
 
-    await uploadFile(uploadUrl, cover);
-
-    redirectToHome();
+      enqueueSnackbar('Uploaded', {variant: 'success'});
+      redirectToHome();
+    } catch (e) {
+      console.log(e);
+      enqueueSnackbar(e.message, {variant: 'error'});
+    }
   };
 
   const handleAddFileToUpload = async (files: File[]) => {
@@ -62,6 +81,8 @@ export const EditBook: React.FC<EditBookProps> = ( props ) => {
                     handleChange={handleChange}
                     handleSave={handleSave}
                     handleAddFileToUpload={handleAddFileToUpload}
-                    handleUpload={handleUpload} />
+                    handleUpload={handleUpload}
+                    activeStep={activeStep}/>
+
   );
 };

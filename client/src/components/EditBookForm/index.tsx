@@ -1,4 +1,4 @@
-import React, {useState, MouseEvent} from "react";
+import React, {MouseEvent} from "react";
 import TextField from '@material-ui/core/TextField';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import {UserBookFormValues} from "../../containers/EditBook/BookFormValues";
@@ -28,22 +28,14 @@ interface EditBookFormProps {
   handleChange: (name: string, value: string|number) => void,
   handleSave: (event: MouseEvent<HTMLButtonElement>) => void
   handleAddFileToUpload: (files: File[]) => void,
-  handleUpload: (event: MouseEvent<HTMLButtonElement>) => void
+  handleUpload: (event: MouseEvent<HTMLButtonElement>) => void,
+  activeStep: number
 }
 
-export const EditBookForm: React.FC<EditBookFormProps> = ( {book, handleChange, handleSave, handleAddFileToUpload, handleUpload} ) => {
+export const EditBookForm: React.FC<EditBookFormProps> = (
+    {book, handleChange, handleSave, handleAddFileToUpload, handleUpload, activeStep}
+    ) => {
   const classes = useStyles();
-  const [activeStep, setActiveStep] = useState(0);
-
-  const setBookDescStep = (event: MouseEvent<HTMLButtonElement>) => {
-    setActiveStep(0);
-  };
-
-  const setUploadCoverStep = (event: MouseEvent<HTMLButtonElement>) => {
-    handleSave(event);
-    setActiveStep(1);
-  };
-
   return (
       <Stepper activeStep={activeStep} orientation="vertical">
         <Step key="Save book description">
@@ -95,7 +87,7 @@ export const EditBookForm: React.FC<EditBookFormProps> = ( {book, handleChange, 
                     variant="outlined"
                 />
               </div>
-              <div><Button variant="contained" color="primary" onClick={setUploadCoverStep}>Next</Button></div>
+              <div><Button variant="contained" color="primary" onClick={handleSave}>Next</Button></div>
             </form>
           </StepContent>
         </Step>

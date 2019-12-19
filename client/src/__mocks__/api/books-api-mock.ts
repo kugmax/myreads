@@ -1,19 +1,24 @@
 import {UserBookReport} from "../../model/UserBookReport";
+import {UserBook} from "../../model/UserBook";
+
+export const mockUserBook_1: UserBook = {
+  userId: "1",
+  createdAt: '',
+  updatedAt: '',
+  status: 'NONE',
+  bookId: "10",
+  title: "Title 1",
+  author: "Author 1",
+  description: "desc 1",
+  isbn: "123456789",
+  pages: 55,
+  coverUrl: "/mock_cover.jpg"
+};
 
 export const mockUserBookReport: UserBookReport = {
   books: [
     {
-      userId: "1",
-      createdAt: '',
-      updatedAt: '',
-      status: 'NONE',
-      bookId: "10",
-      title: "Title 1",
-      author: "Author 1",
-      description: "desc 1",
-      isbn: "123456789",
-      pages: 55,
-      coverUrl: "/mock_cover.jpg"
+      ...mockUserBook_1
     },
     {
       userId: "2",

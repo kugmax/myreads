@@ -7,6 +7,7 @@ import {EditBook} from "./containers/EditBook";
 import {Login} from "./containers/Login";
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
+import {SnackbarProvider} from "notistack";
 
 export interface AppProps {
   auth: Auth
@@ -53,26 +54,28 @@ export const App: React.FC<AppProps> = ( {auth, history }) => {
   };
 
   return (
-      <div className={classes.root}>
-        <Grid container
-              spacing={3}
-              justify={"flex-end"}
-              alignItems="flex-end">
+      <SnackbarProvider maxSnack={3}>
+        <div className={classes.root}>
+          <Grid container
+                spacing={3}
+                justify={"flex-end"}
+                alignItems="flex-end">
 
-          <Grid item xs={3}>
-            <Login auth={auth}/>
+            <Grid item xs={3}>
+              <Login auth={auth}/>
+            </Grid>
           </Grid>
-        </Grid>
 
-        <Grid container
-              spacing={3}
-              direction={"column"}
-              justify={"center"}
-              alignItems="center">
-          <Grid item xs={12}>
-            {generateCurrentPage()}
+          <Grid container
+                spacing={3}
+                direction={"column"}
+                justify={"center"}
+                alignItems="center">
+            <Grid item xs={12}>
+              {generateCurrentPage()}
+            </Grid>
           </Grid>
-        </Grid>
-      </div>
+        </div>
+      </SnackbarProvider>
   );
 };
