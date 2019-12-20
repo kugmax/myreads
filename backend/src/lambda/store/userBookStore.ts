@@ -85,7 +85,7 @@ export class UserBookStore {
     await this.docClient.delete({
       TableName: this.bookTable,
       Key: {
-        "bookId": book.bookId,
+        "userId": book.userId,
         "createdAt": book.createdAt
       }
     }, logResponse)

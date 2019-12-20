@@ -100,8 +100,17 @@ export class UserBookManager {
   }
 
   async changeBookStatus(userId: string, bookId: string, newStatus: string): Promise<string> {
-    console.log("changeBookStatus: ", userId, bookId, newStatus);
-    return undefined;
+    const book: UserBook = await this.getBook(userId, bookId);
+
+    if (!book) {
+      return undefined;
+    }
+
+    book.status = newStatus;
+    book.updatedAt = new Date().toISOString();
+
+    await userBookStore.saveOrUpdate(book);
+    return newStatus;
   }
 
   async generateUploadBookCoverUrl(userId: string, bookId: string): Promise<string> {
