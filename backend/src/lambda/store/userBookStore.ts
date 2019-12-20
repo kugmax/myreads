@@ -33,11 +33,9 @@ export class UserBookStore {
     const nextKey = parseNextKeyParameter(nextKeyStr);
 
     if (nextKey) {
-      logger.info(`add nextKey to query : ${nextKey}`);
+      logger.info(`add nextKey to query : ${JSON.stringify(nextKey)}`);
 
-      queryParams.ExclusiveStartKey = {
-        Key: nextKey
-      }
+      queryParams.ExclusiveStartKey = nextKey
     }
 
     logger.info(`getBookByUserId.queryParams: ${JSON.stringify( queryParams ) }`);
