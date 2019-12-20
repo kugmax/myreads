@@ -17,20 +17,22 @@ interface BooksProps {
 export const Books: React.FC<BooksProps> = ( {auth, history} ) => {
   const [bookReport, setBookReport] = useState({books: [], nextKey: ''} as UserBookReport);
   const [nextKey, setNextKey] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect( () => {
     fetchBooks();
   }, [false]);
 
   const fetchBooks = async () => {
+    setLoading(true);
     try {
       const bookReport: UserBookReport = await getBooks(auth.getIdToken(), 5, nextKey);
       setBookReport(bookReport);
-      setLoading(false);
     } catch (e) {
       alert(`Failed to fetch books: ${e.message}`);
     }
+
+    setLoading(false);
   };
 
   //TODO: need to fix path: /books/${bookId}/edit  /books/new
@@ -40,7 +42,14 @@ export const Books: React.FC<BooksProps> = ( {auth, history} ) => {
 
   const onDelete = async (bookId: string) => {
     console.log("delete " + bookId);
-    await deleteBook(auth.getIdToken(), bookId);
+    setLoading(true);
+    try {
+      await deleteBook(auth.getIdToken(), bookId);
+      await fetchBooks();
+    } catch (e) {
+      console.log(e);
+    }
+    setLoading(false);
   };
 
   return (
@@ -49,7 +58,10 @@ export const Books: React.FC<BooksProps> = ( {auth, history} ) => {
             direction={"column"}
       >
         <Grid item xs={12}>
-          <Button variant="contained" onClick={() => onEditButtonClick("0")} >Add new book</Button>
+          <Button variant="contained"
+                  disabled={loading}
+                  onClick={() => onEditButtonClick("0")} >Add new book
+          </Button>
         </Grid>
 
         <Grid item xs={12}>
