@@ -19,7 +19,7 @@ export class UserBookStore {
 
   }
 
-  async getBookByUserId(userId: string, limit: number, nextKey: string): Promise<UserBookReport> {
+  async getBookByUserId(userId: string, limit: number, nextKeyStr: string): Promise<UserBookReport> {
     let queryParams: any = {
       TableName: this.bookTable,
       IndexName: this.bookIndexName,
@@ -29,6 +29,8 @@ export class UserBookStore {
         ':userId': userId
       }
     };
+
+    const nextKey = parseNextKeyParameter(nextKeyStr);
 
     if (nextKey) {
       logger.info(`add nextKey to query : ${nextKey}`);
@@ -44,7 +46,7 @@ export class UserBookStore {
     logger.info(`getBookByUserId: ${JSON.stringify(result)}`);
 
     const items: UserBook[] = result.Items as UserBook[];
-    const newNextKey = result.LastEvaluatedKey ? result.LastEvaluatedKey.Key : undefined;
+    const newNextKey = result.LastEvaluatedKey ? encodeNextKey(result.LastEvaluatedKey) : undefined;
 
     return {
       books: items,
@@ -109,4 +111,21 @@ function logResponse(err, data) {
   if (err) logger.error(err, err.stack);
   else     logger.info(data);
 
+}
+
+function encodeNextKey(lastEvaluatedKey) {
+  if (!lastEvaluatedKey) {
+    return null
+  }
+
+  return encodeURIComponent(JSON.stringify(lastEvaluatedKey))
+}
+
+function parseNextKeyParameter(nextKeyStr: string) {
+  if (!nextKeyStr) {
+    return undefined
+  }
+
+  const uriDecoded = decodeURIComponent(nextKeyStr);
+  return JSON.parse(uriDecoded);
 }

@@ -62,10 +62,8 @@ custom:
         contentType: application/json
         schema: ${file(api/change-status-request.json)}
 
-#TODO: need to add search using elasticksearch
 #TODO: need to have unit test
 #TODO: need to have integration tests using postman
-#TODO: in client use steps to create book: create entity -> upload cover
 #TODO: need to use build per lambda
 #TODO: need to check req validation body
 functions:
