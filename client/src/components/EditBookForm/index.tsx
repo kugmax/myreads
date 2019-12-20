@@ -1,5 +1,4 @@
 import React, {MouseEvent} from "react";
-import TextField from '@material-ui/core/TextField';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import {UserBookFormValues} from "../../containers/EditBook/BookFormValues";
 import Button from '@material-ui/core/Button';
@@ -8,6 +7,11 @@ import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import StepContent from '@material-ui/core/StepContent';
 import {DropzoneArea} from 'material-ui-dropzone'
+import {Formik, Field, Form} from 'formik';
+import {
+  TextField
+} from 'formik-material-ui';
+import {UserBook} from "../../model/UserBook";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -26,7 +30,7 @@ const useStyles = makeStyles((theme: Theme) =>
 interface EditBookFormProps {
   book: UserBookFormValues,
   handleChange: (name: string, value: string|number) => void,
-  handleSave: (event: MouseEvent<HTMLButtonElement>) => void
+  handleSave: (book: UserBook) => Promise<void>
   handleAddFileToUpload: (files: File[]) => void,
   handleUpload: (event: MouseEvent<HTMLButtonElement>) => void,
   activeStep: number,
@@ -36,63 +40,102 @@ interface EditBookFormProps {
 export const EditBookForm: React.FC<EditBookFormProps> = (
     {book, handleChange, handleSave, handleAddFileToUpload, handleUpload, activeStep, loading}
     ) => {
+
   const classes = useStyles();
   return (
       <Stepper activeStep={activeStep} orientation="vertical">
         <Step key="Save book description">
           <StepLabel>Save book description</StepLabel>
           <StepContent>
-            <form className={classes.root} noValidate autoComplete="off">
-              <div>
-                <TextField
-                    id="title"
-                    label="Title"
-                    value={book.title}
-                    onChange={event => handleChange("title", event.target.value)}
-                    variant="outlined"
-                />
-              </div>
-              <div>
-                <TextField
-                    id="author"
-                    label="Author"
-                    value={book.author}
-                    onChange={event => handleChange("author", event.target.value)}
-                    variant="outlined"
-                />
-              </div>
-              <div>
-                <TextField
-                    id="description"
-                    label="Description"
-                    value={book.description}
-                    onChange={event => handleChange("description", event.target.value)}
-                    variant="outlined"
-                />
-              </div>
-              <div>
-                <TextField
-                    id="isbn"
-                    label="ISBN"
-                    value={book.isbn}
-                    onChange={event => handleChange("isbn", event.target.value)}
-                    variant="outlined"
-                />
-              </div>
-              <div>
-                <TextField
-                    id="pages"
-                    label="Pages"
-                    value={book.pages}
-                    onChange={event => handleChange("pages", event.target.value)}
-                    variant="outlined"
-                />
-              </div>
-              <div><Button variant="contained"
-                           color="primary"
-                           disabled={loading}
-                           onClick={handleSave}>Next</Button></div>
-            </form>
+            <Formik
+                initialValues={{
+                  ...book
+                }}
+
+                validate={values => {
+                  const errors: Partial<any> = {};
+
+                  if (!values.title) {
+                    errors.title = 'Required';
+                  }
+
+                  if (!values.author) {
+                    errors.author = 'Required';
+                  }
+
+                  if (!values.description) {
+                    errors.description = 'Required';
+                  }
+
+                  if (!values.isbn) {
+                    errors.isbn = 'Required';
+                  }
+
+                  return errors;
+
+                }}
+
+                onSubmit={ async (values, {setSubmitting}) => {
+                  console.log("values", values);
+                  setSubmitting(true);
+                  await handleSave(values as UserBook);
+                  setSubmitting(false);
+                }}
+
+                render={({submitForm, isSubmitting, values, setFieldValue}) => (
+                    <Form className={classes.root}>
+                      <div>
+                        <Field
+                            name="title"
+                            label="Title"
+                            value={book.title}
+                            variant="outlined"
+                            component={TextField}
+                        />
+                      </div>
+                      <div>
+                        <Field
+                            name="author"
+                            label="Author"
+                            value={book.author}
+                            variant="outlined"
+                            component={TextField}
+                        />
+                      </div>
+                      <div>
+                        <Field
+                            name="description"
+                            label="Description"
+                            value={book.description}
+                            variant="outlined"
+                            component={TextField}
+                        />
+                      </div>
+                      <div>
+                        <Field
+                            name="isbn"
+                            label="ISBN"
+                            value={book.isbn}
+                            variant="outlined"
+                            component={TextField}
+                        />
+                      </div>
+                      <div>
+                        <Field
+                            name="pages"
+                            label="Pages"
+                            value={book.pages}
+                            variant="outlined"
+                            component={TextField}
+                        />
+                      </div>
+                      <div><Button variant="contained"
+                                   color="primary"
+                                   disabled={loading}
+                                   onClick={submitForm}>Next</Button></div>
+                    </Form>
+                )}
+            />
           </StepContent>
         </Step>
 

@@ -30,18 +30,17 @@ export const EditBook: React.FC<EditBookProps> = ( props ) => {
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (name: string, value:string | number) => {
+  const handleChange = async (name: string, value:string | number) => {
     setBook(prevState => {
       return {...prevState, [name]: value}
     });
   };
 
-  const handleSave = async (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-
+  const handleSave = async (updatedBook: UserBook) => {
+    setBook(updatedBook);
     setLoading(true);
     try {
-      const savedBook: UserBook = await saveBook(props.auth.getIdToken(), book);
+      const savedBook: UserBook = await saveBook(props.auth.getIdToken(), updatedBook);
       setBookId(savedBook.bookId);
 
       enqueueSnackbar('Saved', {variant: 'success'});
