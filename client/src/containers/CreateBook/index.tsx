@@ -4,7 +4,13 @@ import {History} from "history";
 import {useSnackbar} from "notistack";
 import {UserBook} from "../../model/UserBook";
 import {getUploadUrl, saveBook, uploadFile} from "../../api/books-api";
-import {EditBookForm} from "../../components/EditBookForm";
+import {EditBookForm} from "../../components/form/EditBookForm";
+import Step from "@material-ui/core/Step";
+import StepLabel from "@material-ui/core/StepLabel";
+import StepContent from "@material-ui/core/StepContent";
+import Button from "@material-ui/core/Button";
+import Stepper from "@material-ui/core/Stepper";
+import {DropzoneArea} from "material-ui-dropzone/dist";
 
 interface CreateBookProps {
   auth: Auth
@@ -30,11 +36,11 @@ export const CreateBook: React.FC<CreateBookProps> = ( props ) => {
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const handleChange = async (name: string, value:string | number) => {
-    setBook(prevState => {
-      return {...prevState, [name]: value}
-    });
-  };
+  // const handleChange = async (name: string, value:string | number) => {
+  //   setBook(prevState => {
+  //     return {...prevState, [name]: value}
+  //   });
+  // };
 
   const handleSave = async (updatedBook: UserBook) => {
     setBook(updatedBook);
@@ -80,13 +86,28 @@ export const CreateBook: React.FC<CreateBookProps> = ( props ) => {
   };
 
   return (
-      <EditBookForm book={book}
-                    handleChange={handleChange}
-                    handleSave={handleSave}
-                    handleAddFileToUpload={handleAddFileToUpload}
-                    handleUpload={handleUpload}
-                    activeStep={activeStep}
-                    loading={loading}/>
+      <Stepper activeStep={activeStep} orientation="vertical">
+        <Step key="Save book description">
+          <StepLabel>Save book description</StepLabel>
+          <StepContent>
+            <EditBookForm book={book} handleSave={handleSave} loading={loading}/>
+          </StepContent>
+        </Step>
 
+        <Step key="Upload cover">
+          <StepLabel>Upload cover</StepLabel>
+          <StepContent>
+            <div>
+              <DropzoneArea
+                  acceptedFiles={["image/*"]}
+                  filesLimit={1}
+                  useChipsForPreview={true}
+                  showAlerts={false}
+                  onChange={handleAddFileToUpload}/>
+            </div>
+            <div><Button variant="contained" color="primary" disabled={loading} onClick={handleUpload}>Finish</Button></div>
+          </StepContent>
+        </Step>
+      </Stepper>
   );
 };

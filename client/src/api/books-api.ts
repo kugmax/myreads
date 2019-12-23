@@ -46,6 +46,25 @@ export async function saveBook(
   return response.data.book
 }
 
+export async function getBook(
+    idToken: string,
+    bookId: string
+): Promise<UserBook> {
+  if ( USE_MOCK ) {
+    return mockUserBook_1;
+  }
+
+  const response = await Axios.get(`${apiEndpoint}/books/${bookId}`,{
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${idToken}`
+    }
+  });
+
+  //TODO: here need to check at empty response, unit test
+  return response.data.book
+}
+
 export async function deleteBook(
     idToken: string,
     bookId: string

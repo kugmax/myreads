@@ -1,72 +1,81 @@
-import React, {MouseEvent, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Auth from "../../auth/Auth";
 import { History } from 'history'
-import {EditBookForm} from "../../components/EditBookForm";
-import { saveBook, getUploadUrl, uploadFile  } from '../../api/books-api'
+import {EditBookForm} from "../../components/form/EditBookForm";
+import {getBook, saveBook, getUploadUrl, uploadFile  } from '../../api/books-api'
 import {UserBook} from "../../model/UserBook";
 
+import {isEmpty} from "lodash"
+
 import { useSnackbar } from 'notistack';
+import {UploadImage} from "../../components/UploadImage";
 
 interface EditBookProps {
   auth: Auth
-  history: History
+  history: History,
+  match: {
+    params: {
+      bookId: string
+    }
+  }
 }
-
-const DEFAULT_BOOK = {
-  title: '',
-  author: '',
-  description: '',
-  isbn: '',
-  pages: 0
-};
 
 export const EditBook: React.FC<EditBookProps> = ( props ) => {
   const { enqueueSnackbar } = useSnackbar();
 
-  const [book, setBook] = useState(DEFAULT_BOOK);
+  const [book, setBook] = useState({} as UserBook);
   const [cover, setCover] = useState({} as File);
-  const [bookId, setBookId] = useState('');
-
-  const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const handleChange = async (name: string, value:string | number) => {
-    setBook(prevState => {
-      return {...prevState, [name]: value}
-    });
+  const getBookId = () : string => {
+    return props.match.params.bookId
+  };
+
+  useEffect( () => {
+      loadBook(getBookId());
+    }, [false]);
+
+  const loadBook = async (bookId: string) => {
+    try {
+      const userBook = await getBook(props.auth.getIdToken(), bookId);
+      setBook(userBook);
+    } catch (e) {
+      console.log(e);
+      enqueueSnackbar(e.message, {variant: 'error'});
+    }
   };
 
   const handleSave = async (updatedBook: UserBook) => {
     setBook(updatedBook);
     setLoading(true);
     try {
-      const savedBook: UserBook = await saveBook(props.auth.getIdToken(), updatedBook);
-      setBookId(savedBook.bookId);
+      await saveBook(props.auth.getIdToken(), updatedBook);
 
       enqueueSnackbar('Saved', {variant: 'success'});
-
-      setActiveStep(1);
     } catch (e) {
       console.log(e);
       enqueueSnackbar(e.message, {variant: 'error'});
     }
+
+    if (!isEmpty(cover)) {
+      await handleUpload();
+    }
+
     setLoading(false);
+
+    redirectToHome();
   };
 
-  const handleUpload = async (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    setLoading(true);
+  const handleUpload = async () => {
     try {
-      const uploadUrl = await getUploadUrl(props.auth.getIdToken(), bookId);
+      const uploadUrl = await getUploadUrl(props.auth.getIdToken(), getBookId());
       await uploadFile(uploadUrl, cover);
 
       enqueueSnackbar('Uploaded', {variant: 'success'});
-      redirectToHome();
     } catch (e) {
       console.log(e);
       enqueueSnackbar(e.message, {variant: 'error'});
     }
-    setLoading(false);
   };
 
   const handleAddFileToUpload = async (files: File[]) => {
@@ -79,14 +88,24 @@ export const EditBook: React.FC<EditBookProps> = ( props ) => {
     props.history.push(`/home`);
   };
 
-  return (
-      <EditBookForm book={book}
-                    handleChange={handleChange}
-                    handleSave={handleSave}
-                    handleAddFileToUpload={handleAddFileToUpload}
-                    handleUpload={handleUpload}
-                    activeStep={activeStep}
-                    loading={loading}/>
+  const form = () => {
+    if (isEmpty(book)) {
+      return (<h4>Loading...</h4>)
+    } else {
+      return (
+          <>
+            <UploadImage
+                bookId={getBookId()}
+                currentUrl={book.coverUrl}
+                handleClick={handleAddFileToUpload}
+            />
+            <EditBookForm book={book}
+                          handleSave={handleSave}
+                          loading={loading}/>
+          </>
+      );
+    }
+  };
 
-  );
+  return form();
 };
