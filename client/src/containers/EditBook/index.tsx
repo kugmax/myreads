@@ -2,10 +2,8 @@ import React, {useEffect, useState} from 'react';
 import Auth from "../../auth/Auth";
 import { History } from 'history'
 import {EditBookForm} from "../../components/form/EditBookForm";
-import {getBook, saveBook, getUploadUrl, uploadFile  } from '../../api/books-api'
+import {getBook, updateBook, getUploadUrl, uploadFile  } from '../../api/books-api'
 import {UserBook} from "../../model/UserBook";
-
-import {isEmpty} from "lodash"
 
 import { useSnackbar } from 'notistack';
 import {UploadImage} from "../../components/UploadImage";
@@ -49,7 +47,12 @@ export const EditBook: React.FC<EditBookProps> = ( props ) => {
     setBook(updatedBook);
     setLoading(true);
     try {
-      await saveBook(props.auth.getIdToken(), updatedBook);
+      await updateBook(props.auth.getIdToken(), getBookId(), updatedBook);
+
+      if (cover.name) {
+        const uploadUrl = await getUploadUrl(props.auth.getIdToken(), getBookId());
+        await uploadFile(uploadUrl, cover);
+      }
 
       enqueueSnackbar('Saved', {variant: 'success'});
     } catch (e) {
@@ -57,30 +60,14 @@ export const EditBook: React.FC<EditBookProps> = ( props ) => {
       enqueueSnackbar(e.message, {variant: 'error'});
     }
 
-    if (!isEmpty(cover)) {
-      await handleUpload();
-    }
-
     setLoading(false);
 
     redirectToHome();
   };
 
-  const handleUpload = async () => {
-    try {
-      const uploadUrl = await getUploadUrl(props.auth.getIdToken(), getBookId());
-      await uploadFile(uploadUrl, cover);
-
-      enqueueSnackbar('Uploaded', {variant: 'success'});
-    } catch (e) {
-      console.log(e);
-      enqueueSnackbar(e.message, {variant: 'error'});
-    }
-  };
-
   const handleAddFileToUpload = async (files: File[]) => {
     if (!files) return;
-    console.log(files[0]);
+    console.log("setCover", files[0]);
     setCover(files[0]);
   };
 
@@ -89,7 +76,7 @@ export const EditBook: React.FC<EditBookProps> = ( props ) => {
   };
 
   const form = () => {
-    if (isEmpty(book)) {
+    if (Object.entries(book).length === 0) {
       return (<h4>Loading...</h4>)
     } else {
       return (
