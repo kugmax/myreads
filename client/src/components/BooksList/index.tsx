@@ -1,4 +1,4 @@
-import React, {MouseEvent} from 'react';
+import React from 'react';
 import {UserBook} from "../../model/UserBook";
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -7,6 +7,7 @@ import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
 import IconButton from '@material-ui/core/IconButton';
 import HighlightOffOutlinedIcon from '@material-ui/icons/HighlightOffOutlined';
+import ButtonBase from '@material-ui/core/ButtonBase';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -47,9 +48,10 @@ const useStyles = makeStyles(theme => ({
 interface BooksListProps {
   list: UserBook[],
   handleDelete: (bookId: string) => void
+  handleClick: (bookId: string) => void
 }
 
-export const BooksList: React.FC<BooksListProps> = ( {list, handleDelete} ) => {
+export const BooksList: React.FC<BooksListProps> = ( {list, handleDelete, handleClick} ) => {
   const classes = useStyles();
 
   return (
@@ -60,7 +62,10 @@ export const BooksList: React.FC<BooksListProps> = ( {list, handleDelete} ) => {
           cols={2}>
         {list.map(book => (
             <GridListTile key={book.bookId} className={classes.tile}>
-                <img src={book.coverUrl} alt={book.title} className={classes.img} />
+              <ButtonBase>
+                <img src={book.coverUrl} alt={book.title} className={classes.img} onClick={ () => {handleClick(book.bookId)} } />
+              </ButtonBase>
+
                 <GridListTileBar
                     titlePosition="top"
                     actionIcon={

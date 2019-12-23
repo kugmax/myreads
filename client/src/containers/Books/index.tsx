@@ -44,7 +44,10 @@ export const Books: React.FC<BooksProps> = ( {auth, history} ) => {
     setLoading(false);
   };
 
-  //TODO: need to fix path: /books/${bookId}/edit  /books/new
+  const onCreateButtonClick = () => {
+    history.push(`/books/create`)
+  };
+
   const onEditButtonClick = (bookId: string) => {
     history.push(`/books/${bookId}/edit`)
   };
@@ -73,7 +76,7 @@ export const Books: React.FC<BooksProps> = ( {auth, history} ) => {
         <Grid item xs={12}>
           <Button variant="contained"
                   disabled={loading}
-                  onClick={() => onEditButtonClick("0")} >Add new book
+                  onClick={() => onCreateButtonClick()} >Add new book
           </Button>
         </Grid>
 
@@ -96,7 +99,7 @@ export const Books: React.FC<BooksProps> = ( {auth, history} ) => {
               releaseToRefreshContent={
                 <h3 style={{textAlign: 'center'}}>&#8593; Release to refresh</h3>
               }>
-            <BooksList list={bookReport.books} handleDelete={onDelete}/>
+            <BooksList list={bookReport.books} handleDelete={onDelete} handleClick={onEditButtonClick}/>
           </InfiniteScroll>
         </Grid>
 

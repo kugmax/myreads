@@ -8,6 +8,7 @@ import {Login} from "./containers/Login";
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import {SnackbarProvider} from "notistack";
+import {CreateBook} from "./containers/CreateBook";
 
 export interface AppProps {
   auth: Auth
@@ -41,7 +42,13 @@ export const App: React.FC<AppProps> = ( {auth, history }) => {
                 return <Books {...props} auth={auth} />
               }}
           />
-
+          <Route
+              path="/books/create"
+              exact
+              render={props => {
+                return <CreateBook {...props} auth={auth} />
+              }}
+          />
           <Route
               path="/books/:bookId/edit"
               exact
