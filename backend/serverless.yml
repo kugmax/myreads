@@ -58,9 +58,9 @@ custom:
       - name: SaveBookRequest
         contentType: application/json
         schema: ${file(api/create-book-request.json)}
-      - name: ChangeBookStatusRequest
+      - name: RateBookRequest
         contentType: application/json
-        schema: ${file(api/change-status-request.json)}
+        schema: ${file(api/rate-book-request.json)}
 
 #TODO: need to have unit test
 #TODO: need to have integration tests using postman
@@ -143,20 +143,20 @@ functions:
           - dynamodb:PutItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USER_BOOKS_TABLE}
 
-  ChangeBookStatus:
-    handler: src/lambda/http/changeBookStatus.handler
+  RateBook:
+    handler: src/lambda/http/rateBook.handler
     events:
       - http:
           method: patch
-          path: books/{bookId}/changeStatus
+          path: books/{bookId}/rateBook
           cors: true
           authorizer: Auth
           reqValidatorName: BodyBookRequestValidator
           documentation:
-            summary: Change user book status
-            description: Change user book status
+            summary: Rate user book
+            description: Rate user book
             requestModels:
-              'application/json': ChangeBookStatusRequest
+              'application/json': RateBookRequest
     iamRoleStatements:
       - Effect: Allow
         Action:

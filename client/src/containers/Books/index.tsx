@@ -7,8 +7,10 @@ import { UserBookReport } from "../../model/UserBookReport";
 import { BooksList } from "../../components/BooksList";
 import { Button } from '@material-ui/core';
 import Grid from "@material-ui/core/Grid";
-import { deleteBook  } from '../../api/books-api'
+import { deleteBook, rateBook } from '../../api/books-api'
 import InfiniteScroll from "react-infinite-scroll-component";
+import {UserBook} from "../../model/UserBook";
+import update from 'immutability-helper';
 
 interface BooksProps {
   auth: Auth
@@ -65,6 +67,32 @@ export const Books: React.FC<BooksProps> = ( {auth, history} ) => {
     setLoading(false);
   };
 
+  const onRatingChanged = async (bookId: string, newRating: number) => {
+    setBookReport(
+        {books: await findAndRateIt(bookReport.books, bookId, newRating)}
+    );
+
+    try {
+      await rateBook(auth.getIdToken(), bookId, {newRating: newRating});
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const findAndRateIt = async (books: UserBook[], bookId: string, newRating: number): Promise<UserBook[]> => {
+    const bookIndex = books.findIndex(b => b.bookId === bookId);
+
+    if (bookIndex < 0) {
+      return books;
+    }
+
+    const updatedBook = update(books[bookIndex], {rating: {$set: newRating}});
+
+    return update(books, {
+      $splice: [[bookIndex, 1, updatedBook]]
+    });
+  };
+
   const hasMore = () : boolean => {
     return bookReport && bookReport.nextKey !== undefined;
   };
@@ -86,21 +114,11 @@ export const Books: React.FC<BooksProps> = ( {auth, history} ) => {
               dataLength={bookReport.books.length}
               next={ () => fetchBooks(true)}
               hasMore={hasMore() }
-              loader={<h4>Loading...</h4>}
-              endMessage={
-                <p style={{textAlign: 'center'}}>
-                  <b>Yay! You have seen it all</b>
-                </p>
-              }
+              loader=""
               refreshFunction={ () => fetchBooks(false)}
-              pullDownToRefresh
-              pullDownToRefreshContent={
-                <h3 style={{textAlign: 'center'}}>&#8595; Pull down to refresh</h3>
-              }
-              releaseToRefreshContent={
-                <h3 style={{textAlign: 'center'}}>&#8593; Release to refresh</h3>
-              }>
-            <BooksList list={bookReport.books} handleDelete={onDelete} handleClick={onEditButtonClick}/>
+              pullDownToRefresh={false}
+          >
+            <BooksList list={bookReport.books} handleDelete={onDelete} handleClick={onEditButtonClick} handleRating={onRatingChanged}/>
           </InfiniteScroll>
         </Grid>
 

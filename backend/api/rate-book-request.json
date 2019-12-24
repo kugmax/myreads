@@ -3,12 +3,12 @@
   "title": "book",
   "type": "object",
   "properties": {
-    "newStatus": {
-      "type": "string"
+    "newRating": {
+      "type": "number"
     }
   },
   "required": [
-    "newStatus"
+    "newRating"
   ],
   "additionalProperties": true
 }

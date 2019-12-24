@@ -8,6 +8,7 @@ import GridListTileBar from '@material-ui/core/GridListTileBar';
 import IconButton from '@material-ui/core/IconButton';
 import HighlightOffOutlinedIcon from '@material-ui/icons/HighlightOffOutlined';
 import ButtonBase from '@material-ui/core/ButtonBase';
+import Rating from '@material-ui/lab/Rating';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -49,9 +50,10 @@ interface BooksListProps {
   list: UserBook[],
   handleDelete: (bookId: string) => void
   handleClick: (bookId: string) => void
+  handleRating: (bookId: string, newRating: number) => void
 }
 
-export const BooksList: React.FC<BooksListProps> = ( {list, handleDelete, handleClick} ) => {
+export const BooksList: React.FC<BooksListProps> = ( {list, handleDelete, handleClick, handleRating} ) => {
   const classes = useStyles();
 
   return (
@@ -61,7 +63,8 @@ export const BooksList: React.FC<BooksListProps> = ( {list, handleDelete, handle
           className={classes.gridList}
           cols={2}>
         {list.map(book => (
-            <GridListTile key={book.bookId} className={classes.tile}>
+            <GridListTile key={book.bookId}>
+
               <ButtonBase>
                 <img src={book.coverUrl} alt={book.title} className={classes.img} onClick={ () => {handleClick(book.bookId)} } />
               </ButtonBase>
@@ -77,13 +80,19 @@ export const BooksList: React.FC<BooksListProps> = ( {list, handleDelete, handle
                     className={classes.delBar}
                 />
 
-                <GridListTileBar
-                    title={book.title}
-                    subtitle={<span>by: {book.author}</span>}
-                    className={classes.tileBar}
-                />
-
+              <GridListTileBar
+                  title={book.title}
+                  subtitle={
+                    <span>
+                      <Rating name={"r"+ book.bookId} value={book.rating} size="small"
+                              onChange={(e, v) => handleRating(book.bookId, v)}
+                      />
+                    </span>
+                  }
+                  className={classes.tileBar}
+              />
             </GridListTile>
+
         ))}
       </GridList>
       </div>

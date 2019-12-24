@@ -2,7 +2,6 @@ export interface UserBook {
   userId: string
   createdAt: string,
   updatedAt: string,
-  status: string,
   bookId: string,
   title: string,
   author: string,
@@ -10,4 +9,5 @@ export interface UserBook {
   isbn: string
   pages: number
   coverUrl: string
+  rating: number
 }

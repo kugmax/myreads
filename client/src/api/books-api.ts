@@ -4,6 +4,7 @@ import Axios from 'axios'
 import { SaveBookRequest } from './request/SaveBookRequest';
 import {UserBookReport} from "../model/UserBookReport";
 import {mockUserBook_1, mockUserBookReport} from "../__mocks__/api/books-api-mock";
+import {RateBookRequest} from "./request/RateBookRequest";
 
 const USE_MOCK = false;
 
@@ -56,6 +57,26 @@ export async function updateBook(
   }
 
   const response = await Axios.patch(`${apiEndpoint}/books/${bookId}`,  JSON.stringify(newBook), {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${idToken}`
+    }
+  });
+
+  //TODO: here need to check at empty response, unit test
+  return response.data.book
+}
+
+export async function rateBook(
+    idToken: string,
+    bookId: string,
+    newRating: RateBookRequest
+): Promise<number> {
+  if ( USE_MOCK ) {
+    return 3;
+  }
+
+  const response = await Axios.patch(`${apiEndpoint}/books/${bookId}/rateBook`,  JSON.stringify(newRating), {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${idToken}`

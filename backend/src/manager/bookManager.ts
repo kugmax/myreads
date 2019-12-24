@@ -6,7 +6,6 @@ import { UserBook } from "../model/UserBook";
 import { UserBookStore } from "../lambda/store/userBookStore";
 
 import * as uuid from 'uuid';
-import { UserBookStatus } from "../model/UserBookStatus";
 import {UserBookReport} from "../model/UserBookReport";
 import {createLogger} from "../utils/logger";
 
@@ -44,12 +43,12 @@ export class UserBookManager {
       userId: userId,
       createdAt: now,
       updatedAt: now,
-      status: UserBookStatus.NONE,
       title: saveBookRequest.title,
       author: saveBookRequest.author,
       description: saveBookRequest.description,
       isbn: saveBookRequest.isbn,
       pages: saveBookRequest.pages,
+      rating: 0,
       coverUrl: `https://${coverBucket}.s3.amazonaws.com/${userId}/${bookId}`
     };
 
@@ -66,13 +65,13 @@ export class UserBookManager {
       userId: userId,
       createdAt: savedBook.createdAt,
       updatedAt: now,
-      status: UserBookStatus.NONE,
       title: saveBookRequest.title,
       author: saveBookRequest.author,
       description: saveBookRequest.description,
       isbn: saveBookRequest.isbn,
       pages: saveBookRequest.pages,
-      coverUrl: savedBook.coverUrl
+      coverUrl: savedBook.coverUrl,
+      rating: savedBook.rating,
     };
 
     logger.info(`updateBook: ${JSON.stringify(userBook)}`);
@@ -99,18 +98,18 @@ export class UserBookManager {
     return book;
   }
 
-  async changeBookStatus(userId: string, bookId: string, newStatus: string): Promise<string> {
+  async rateBook(userId: string, bookId: string, newRating: number): Promise<number> {
     const book: UserBook = await this.getBook(userId, bookId);
 
     if (!book) {
       return undefined;
     }
 
-    book.status = newStatus;
+    book.rating = newRating;
     book.updatedAt = new Date().toISOString();
 
     await userBookStore.saveOrUpdate(book);
-    return newStatus;
+    return newRating;
   }
 
   async generateUploadBookCoverUrl(userId: string, bookId: string): Promise<string> {
