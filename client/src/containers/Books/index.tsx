@@ -26,14 +26,15 @@ export const Books: React.FC<BooksProps> = ( {auth, history} ) => {
   const fetchBooks = async (isLoadMore: boolean) => {
     const nextKey = isLoadMore && bookReport.nextKey ? bookReport.nextKey : '';
 
-    console.log("fetchBooks");
-
     setLoading(true);
     try {
       const bookReportNew: UserBookReport = await getBooks(auth.getIdToken(), 6, nextKey);
+
+      const newBooks = isLoadMore ? bookReport.books.concat(bookReportNew.books) : bookReportNew.books;
+
       setBookReport( prevState => {
         return {
-          books: bookReport.books.concat(bookReportNew.books),
+          books: newBooks,
           nextKey: bookReportNew.nextKey
         }
       });
