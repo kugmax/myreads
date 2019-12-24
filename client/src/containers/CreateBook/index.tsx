@@ -36,12 +36,6 @@ export const CreateBook: React.FC<CreateBookProps> = ( props ) => {
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  // const handleChange = async (name: string, value:string | number) => {
-  //   setBook(prevState => {
-  //     return {...prevState, [name]: value}
-  //   });
-  // };
-
   const handleSave = async (updatedBook: UserBook) => {
     setBook(updatedBook);
     setLoading(true);
@@ -90,7 +84,7 @@ export const CreateBook: React.FC<CreateBookProps> = ( props ) => {
         <Step key="Save book description">
           <StepLabel>Save book description</StepLabel>
           <StepContent>
-            <EditBookForm book={book} handleSave={handleSave} loading={loading}/>
+            <EditBookForm book={book} handleSave={handleSave} loading={loading} history={props.history}/>
           </StepContent>
         </Step>
 

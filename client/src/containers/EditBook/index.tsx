@@ -88,7 +88,9 @@ export const EditBook: React.FC<EditBookProps> = ( props ) => {
             />
             <EditBookForm book={book}
                           handleSave={handleSave}
-                          loading={loading}/>
+                          loading={loading}
+                          history={props.history}
+            />
           </>
       );
     }

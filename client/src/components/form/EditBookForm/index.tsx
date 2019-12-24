@@ -6,6 +6,8 @@ import Button from "@material-ui/core/Button";
 import {Formik, Field, Form} from 'formik';
 import {TextField} from 'formik-material-ui';
 import {UserBookFormValues} from "../../../containers/EditBook/BookFormValues";
+import {History} from "history";
+import Grid from "@material-ui/core/Grid";
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -16,9 +18,9 @@ const useStyles = makeStyles((theme: Theme) =>
           width: 200,
         },
       },
-      button: {
-        margin: theme.spacing(1),
-      },
+      backButton: {
+        paddingLeft: "14px"
+      }
     }),
 );
 
@@ -26,10 +28,11 @@ interface EditBookFormProps {
   book: UserBookFormValues,
   handleSave: (book: UserBook) => Promise<void>
   loading: boolean
+  history: History
 }
 
 export const EditBookForm: React.FC<EditBookFormProps> = (
-    {book, handleSave, loading}
+    {book, handleSave, loading, history}
 ) => {
   const classes = useStyles();
 
@@ -56,6 +59,10 @@ export const EditBookForm: React.FC<EditBookFormProps> = (
 
             if (!values.isbn) {
               errors.isbn = 'Required';
+            }
+
+            if (!values.pages || values.pages <= 0) {
+              errors.pages = 'Required';
             }
 
             return errors;
@@ -116,10 +123,25 @@ export const EditBookForm: React.FC<EditBookFormProps> = (
                       component={TextField}
                   />
                 </div>
-                <div><Button variant="contained"
-                             color="primary"
-                             disabled={loading}
-                             onClick={submitForm}>Save</Button></div>
+                  <Grid container
+                        spacing={3}
+                        direction={"row"}
+                        className={classes.backButton}>
+
+                    <Grid item xs={6}>
+                      <Button variant="contained"
+                              color="primary"
+                              disabled={loading}
+                              onClick={submitForm}>Save</Button>
+                    </Grid>
+
+                    <Grid item xs={6}>
+                      <Button variant="contained"
+                              color="default"
+                              disabled={loading}
+                              onClick={() => history.push(`/home`)}>Back</Button>
+                    </Grid>
+                  </Grid>
               </Form>
           )}
       />

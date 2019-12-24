@@ -6,6 +6,7 @@ const useStyles = makeStyles(theme => ({
   img: {
     width: 150,
     height: 200,
+    paddingLeft: "30px"
   },
 
 }));
