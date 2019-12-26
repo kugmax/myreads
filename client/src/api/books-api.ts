@@ -24,7 +24,6 @@ export async function getBooks(idToken: string, limit: number = 5, nextKey?: str
     },
   });
   console.log('Books:', response.data);
-  //TODO: here need to check at empty response, using unit test
   return response.data;
 }
 
@@ -43,7 +42,6 @@ export async function saveBook(
     }
   });
 
-  //TODO: here need to check at empty response, unit test
   return response.data.book
 }
 
@@ -63,7 +61,6 @@ export async function updateBook(
     }
   });
 
-  //TODO: here need to check at empty response, unit test
   return response.data.book
 }
 
@@ -83,7 +80,6 @@ export async function rateBook(
     }
   });
 
-  //TODO: here need to check at empty response, unit test
   return response.data.book
 }
 
@@ -102,7 +98,6 @@ export async function getBook(
     }
   });
 
-  //TODO: here need to check at empty response, unit test
   return response.data.book
 }
 

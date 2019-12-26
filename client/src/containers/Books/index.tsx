@@ -17,6 +17,8 @@ interface BooksProps {
   history: History
 }
 
+const FETCHING_BOOKS_NUMBER = 8;
+
 export const Books: React.FC<BooksProps> = ( {auth, history} ) => {
   const [bookReport, setBookReport] = useState({books: [], nextKey: ''} as UserBookReport);
   const [loading, setLoading] = useState(false);
@@ -30,7 +32,7 @@ export const Books: React.FC<BooksProps> = ( {auth, history} ) => {
 
     setLoading(true);
     try {
-      const bookReportNew: UserBookReport = await getBooks(auth.getIdToken(), 6, nextKey);
+      const bookReportNew: UserBookReport = await getBooks(auth.getIdToken(), FETCHING_BOOKS_NUMBER, nextKey);
 
       const newBooks = isLoadMore ? bookReport.books.concat(bookReportNew.books) : bookReportNew.books;
 
@@ -114,7 +116,7 @@ export const Books: React.FC<BooksProps> = ( {auth, history} ) => {
               dataLength={bookReport.books.length}
               next={ () => fetchBooks(true)}
               hasMore={hasMore() }
-              loader=""
+              loader={<h4>Loading...</h4>}
               refreshFunction={ () => fetchBooks(false)}
               pullDownToRefresh={false}
           >
