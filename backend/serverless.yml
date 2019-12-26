@@ -10,6 +10,9 @@ plugins:
   - serverless-iam-roles-per-function
   - serverless-plugin-tracing
 
+package:
+ individually: true
+
 provider:
   name: aws
   runtime: nodejs10.x
@@ -53,7 +56,6 @@ custom:
         version: v1.0.0
         title: Book API
         description: MyReads app
-#        TODO: need to impl
     models:
       - name: SaveBookRequest
         contentType: application/json
@@ -62,10 +64,6 @@ custom:
         contentType: application/json
         schema: ${file(api/rate-book-request.json)}
 
-#TODO: need to have unit test
-#TODO: need to have integration tests using postman
-#TODO: need to use build per lambda
-#TODO: need to check req validation body
 functions:
 
   Auth:

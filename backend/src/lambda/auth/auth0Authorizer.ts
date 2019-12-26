@@ -50,7 +50,6 @@ export const handler = async (
   }
 };
 
-//TODO: need to filter keys
 async function verifyToken(authHeader: string): Promise<JwtPayload> {
   const token = getToken(authHeader);
   const jwt: Jwt = decode(token, { complete: true }) as Jwt;
